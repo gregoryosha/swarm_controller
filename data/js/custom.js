@@ -2,7 +2,6 @@ var targetUrl = `ws://${window.location.hostname}/ws`;
 var websocket;
 window.addEventListener('load', onLoad);
 
-
 function onLoad() {
   initializeSocket();
 }
@@ -29,6 +28,38 @@ function sendMessage(message) {
   websocket.send(message);
 }
 
+window.addEventListener('keydown', (press)=>{
+  if (press.key == 'w') {
+    sendMessage('up');
+    console.log(press)
+  }
+  else if (press.key == 'a') {
+    sendMessage('left');
+  }
+  else if (press.key == 'd') {
+    sendMessage('right');
+  }
+  else if (press.key == 's') {
+    sendMessage('down');
+  }
+})
+
+window.addEventListener('keyup', (press)=>{
+  if (press.key == 'w') {
+    sendMessage('stop');
+    console.log(press)
+  }
+  else if (press.key == 'a') {
+    sendMessage('stop');
+  }
+  else if (press.key == 'd') {
+    sendMessage('stop');
+  }
+  else if (press.key == 's') {
+    sendMessage('stop');
+  }
+})
+
 /*
 Speed Settings Handler
 */
@@ -43,6 +74,8 @@ speedSettings.forEach((radio) =>
     sendMessage(speedSettings); 
   }
 ));
+
+
 
 
 /*
