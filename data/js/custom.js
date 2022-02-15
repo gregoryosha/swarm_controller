@@ -61,24 +61,6 @@ window.addEventListener('keyup', (press)=>{
 })
 
 /*
-Speed Settings Handler
-*/
-var speedSettings = document.querySelectorAll(
-  'input[type=radio][name="speed-settings"]'
-);
-speedSettings.forEach((radio) =>
-  radio.addEventListener("change", () => 
-  {
-    var speedSettings = radio.value;
-    console.log('Speed Settings :: ' + speedSettings)
-    sendMessage(speedSettings); 
-  }
-));
-
-
-
-
-/*
 O-Pad/ D-Pad Controller and Javascript Code
 */
 // Prevent scrolling on every click!
@@ -104,7 +86,8 @@ function touchEndHandler(event) {
 
 
 document.querySelectorAll('.control').forEach(item => {
-  item.addEventListener('touchstart', touchStartHandler)
+  item.addEventListener('touchstart', touchStartHandler);
+  
 })
 
 document.querySelectorAll('.control').forEach(item => {

@@ -4,17 +4,6 @@
 #include <ESPAsyncWebServer.h>
 #include "SPIFFS.h"
 
-/*
-  The resolution of the PWM is 8 bit so the value is between 0-255
-  We will set the speed between 100 to 255.
-*/
-enum speedSettings
-{
-  SLOW = 100,
-  NORMAL = 180,
-  FAST = 255
-};
-
 class Car
 {
 private:
@@ -25,19 +14,6 @@ private:
   int in3 = 32;
   int in4 = 33;
 
-  // PWM Setup to control motor speed
-  const int SPEED_CONTROL_PIN_1 = 25;
-  const int SPEED_CONTROL_PIN_2 = 26;
-  // Play around with the frequency settings depending on the motor that you are using
-  const int freq = 2000;
-  const int channel_0 = 1;
-  const int channel_1 = 2;
-  // 8 Bit resolution for duty cycle so value is between 0 - 255
-  const int resolution = 8;
-
-  // holds the current speed settings, see values for SLOW, NORMAL, FAST
-  speedSettings currentSpeedSettings;
-
 public:
   Car()
   {
@@ -46,8 +22,6 @@ public:
     pinMode(in2, OUTPUT);
     pinMode(in3, OUTPUT);
     pinMode(in4, OUTPUT);
-    pinMode(SPEED_CONTROL_PIN_1, OUTPUT);
-    pinMode(SPEED_CONTROL_PIN_2, OUTPUT);
 
     // Set initial motor state to OFF
     digitalWrite(in1, LOW);
@@ -55,23 +29,12 @@ public:
     digitalWrite(in3, LOW);
     digitalWrite(in4, LOW);
 
-    //Set the PWM Settings
-    ledcSetup(channel_0, freq, resolution);
-    ledcSetup(channel_1, freq, resolution);
-
-    //Attach Pin to Channel
-    ledcAttachPin(SPEED_CONTROL_PIN_1, channel_0);
-    ledcAttachPin(SPEED_CONTROL_PIN_2, channel_1);
-
-    // initialize default speed to SLOW
-    setCurrentSpeed(speedSettings::NORMAL);
   }
 
   // Turn the car left
   void turnLeft()
   {
     Serial.println("car is turning left...");
-    setMotorSpeed();
     digitalWrite(in1, LOW);
     digitalWrite(in2, HIGH);
     digitalWrite(in3, LOW);
@@ -82,7 +45,6 @@ public:
   void turnRight()
   {
     Serial.println("car is turning right...");
-    setMotorSpeed();
     digitalWrite(in1, LOW);
     digitalWrite(in2, LOW);
     digitalWrite(in3, LOW);
@@ -93,7 +55,6 @@ public:
   void moveForward()
   {
     Serial.println("car is moving forward...");
-    setMotorSpeed();
     digitalWrite(in1, LOW);
     digitalWrite(in2, HIGH);
     digitalWrite(in3, LOW);
@@ -103,7 +64,6 @@ public:
   // Move the car backward
   void moveBackward()
   {
-    setMotorSpeed();
     Serial.println("car is moving backward...");
     digitalWrite(in1, HIGH);
     digitalWrite(in2, LOW);
@@ -115,35 +75,11 @@ public:
   void stop()
   {
     Serial.println("car is stopping...");
-    ledcWrite(channel_0, 0);
-    ledcWrite(channel_1, 0);
-
     // // Turn off motors
     digitalWrite(in1, LOW);
     digitalWrite(in2, LOW);
     digitalWrite(in3, LOW);
     digitalWrite(in4, LOW);
-  }
-
-  // Set the motor speed
-  void setMotorSpeed()
-  {
-    // change the duty cycle of the speed control pin connected to the motor
-    Serial.print("Speed Settings: ");
-    Serial.println(currentSpeedSettings);
-    ledcWrite(channel_0, currentSpeedSettings);
-    ledcWrite(channel_1, currentSpeedSettings);
-  }
-  // Set the current speed
-  void setCurrentSpeed(speedSettings newSpeedSettings)
-  {
-    Serial.println("car is changing speed...");
-    currentSpeedSettings = newSpeedSettings;
-  }
-  // Get the current speed
-  speedSettings getCurrentSpeed()
-  {
-    return currentSpeedSettings;
   }
 };
 
@@ -183,46 +119,6 @@ void sendCarCommand(const char *command)
   {
     car.stop();
   }
-  else if (strcmp(command, "slow-speed") == 0)
-  {
-    car.setCurrentSpeed(speedSettings::SLOW);
-  }
-  else if (strcmp(command, "normal-speed") == 0)
-  {
-    car.setCurrentSpeed(speedSettings::NORMAL);
-  }
-  else if (strcmp(command, "fast-speed") == 0)
-  {
-    car.setCurrentSpeed(speedSettings::FAST);
-  }
-}
-
-// Processor for index.html page template.  This sets the radio button to checked or unchecked
-String indexPageProcessor(const String &var)
-{
-  String status = "";
-  if (var == "SPEED_SLOW_STATUS")
-  {
-    if (car.getCurrentSpeed() == speedSettings::SLOW)
-    {
-      status = "checked";
-    }
-  }
-  else if (var == "SPEED_NORMAL_STATUS")
-  {
-    if (car.getCurrentSpeed() == speedSettings::NORMAL)
-    {
-      status = "checked";
-    }
-  }
-  else if (var == "SPEED_FAST_STATUS")
-  {
-    if (car.getCurrentSpeed() == speedSettings::FAST)
-    {
-      status = "checked";
-    }
-  }
-  return status;
 }
 
 // Callback function that receives messages from websocket client
@@ -311,7 +207,7 @@ void setup()
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
             {
               Serial.println("Requesting index page...");
-              request->send(SPIFFS, "/index.html", "text/html", false, indexPageProcessor);
+              request->send(SPIFFS, "/index.html", "text/html", false);
             });
 
   // Route to load entireframework.min.css file
