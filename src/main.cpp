@@ -8,26 +8,27 @@ class Car
 {
 private:
   // Motor 1 connections
-  int in1 = 12;
-  int in2 = 13;
+  int motorA1 = 12;
+  int motorA2 = 13;
+
   // Motor 2 connections
-  int in3 = 32;
-  int in4 = 33;
+  int motorB1 = 32;
+  int motorB2 = 33;
 
 public:
   Car()
   {
     // Set all pins to output
-    pinMode(in1, OUTPUT);
-    pinMode(in2, OUTPUT);
-    pinMode(in3, OUTPUT);
-    pinMode(in4, OUTPUT);
+    pinMode(motorA1, OUTPUT);
+    pinMode(motorA2, OUTPUT);
+    pinMode(motorB1, OUTPUT);
+    pinMode(motorB2, OUTPUT);
 
     // Set initial motor state to OFF
-    digitalWrite(in1, LOW);
-    digitalWrite(in2, LOW);
-    digitalWrite(in3, LOW);
-    digitalWrite(in4, LOW);
+    digitalWrite(motorA1, LOW);
+    digitalWrite(motorA2, LOW);
+    digitalWrite(motorB1, LOW);
+    digitalWrite(motorB2, LOW);
 
   }
 
@@ -35,40 +36,40 @@ public:
   void turnLeft()
   {
     Serial.println("car is turning left...");
-    digitalWrite(in1, LOW);
-    digitalWrite(in2, HIGH);
-    digitalWrite(in3, LOW);
-    digitalWrite(in4, LOW);
+    digitalWrite(motorA1, LOW);
+    digitalWrite(motorA2, LOW);
+    digitalWrite(motorB1, LOW);
+    digitalWrite(motorB2, HIGH);
   }
 
   // Turn the car right
   void turnRight()
   {
     Serial.println("car is turning right...");
-    digitalWrite(in1, LOW);
-    digitalWrite(in2, LOW);
-    digitalWrite(in3, LOW);
-    digitalWrite(in4, HIGH);
+    digitalWrite(motorA1, LOW);
+    digitalWrite(motorA2, HIGH);
+    digitalWrite(motorB1, LOW);
+    digitalWrite(motorB2, LOW);
   }
 
   // Move the car forward
   void moveForward()
   {
     Serial.println("car is moving forward...");
-    digitalWrite(in1, LOW);
-    digitalWrite(in2, HIGH);
-    digitalWrite(in3, LOW);
-    digitalWrite(in4, HIGH);
+    digitalWrite(motorA1, LOW);
+    digitalWrite(motorA2, HIGH);
+    digitalWrite(motorB1, LOW);
+    digitalWrite(motorB2, HIGH);
   }
 
   // Move the car backward
   void moveBackward()
   {
     Serial.println("car is moving backward...");
-    digitalWrite(in1, HIGH);
-    digitalWrite(in2, LOW);
-    digitalWrite(in3, HIGH);
-    digitalWrite(in4, LOW);
+    digitalWrite(motorA1, HIGH);
+    digitalWrite(motorA2, LOW);
+    digitalWrite(motorB1, HIGH);
+    digitalWrite(motorB2, LOW);
   }
 
   // Stop the car
@@ -76,10 +77,10 @@ public:
   {
     Serial.println("car is stopping...");
     // // Turn off motors
-    digitalWrite(in1, LOW);
-    digitalWrite(in2, LOW);
-    digitalWrite(in3, LOW);
-    digitalWrite(in4, LOW);
+    digitalWrite(motorA1, LOW);
+    digitalWrite(motorA2, LOW);
+    digitalWrite(motorB1, LOW);
+    digitalWrite(motorB2, LOW);
   }
 };
 
