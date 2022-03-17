@@ -12,8 +12,8 @@ private:
   int motorA2 = 13;
 
   // Motor 2 connections
-  int motorB1 = 32;
-  int motorB2 = 33;
+  int motorB1 = 14;
+  int motorB2 = 27;
 
 public:
   Car()
