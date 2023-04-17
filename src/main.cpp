@@ -4,146 +4,132 @@
 #include <ESPAsyncWebServer.h>
 #include "SPIFFS.h"
 
-/*
-  The resolution of the PWM is 8 bit so the value is between 0-255
-  We will set the speed between 100 to 255.
-*/
-enum speedSettings
-{
-  SLOW = 100,
-  NORMAL = 180,
-  FAST = 255
-};
-
 class Car
 {
 private:
-  // Motor 1 connections
-  int in1 = 12;
-  int in2 = 13;
-  // Motor 2 connections
-  int in3 = 32;
-  int in4 = 33;
+  //Front Motor Driver Connections
+  int r_front_motorB1 = 2; //HIGH is forward 19 21
+  int r_front_motorB2 = 15; 
+  int l_front_motorA1 = 21;
+  int l_front_motorA2 = 19; //HIGH is forward
 
-  // PWM Setup to control motor speed
-  const int SPEED_CONTROL_PIN_1 = 25;
-  const int SPEED_CONTROL_PIN_2 = 26;
-  // Play around with the frequency settings depending on the motor that you are using
-  const int freq = 2000;
-  const int channel_0 = 1;
-  const int channel_1 = 2;
-  // 8 Bit resolution for duty cycle so value is between 0 - 255
-  const int resolution = 8;
-
-  // holds the current speed settings, see values for SLOW, NORMAL, FAST
-  speedSettings currentSpeedSettings;
+  //Back Motor Driver Connections
+  int r_back_motorB1 = 18; //HIGH is forward
+  int r_back_motorB2 = 4;
+  int l_back_motorA1 = 23; 
+  int l_back_motorA2 = 22; //HIGH is forward
 
 public:
   Car()
   {
     // Set all pins to output
-    pinMode(in1, OUTPUT);
-    pinMode(in2, OUTPUT);
-    pinMode(in3, OUTPUT);
-    pinMode(in4, OUTPUT);
-    pinMode(SPEED_CONTROL_PIN_1, OUTPUT);
-    pinMode(SPEED_CONTROL_PIN_2, OUTPUT);
+    pinMode(r_front_motorB1, OUTPUT);
+    pinMode(r_front_motorB2, OUTPUT);
+    pinMode(l_front_motorA1, OUTPUT);
+    pinMode(l_front_motorA2, OUTPUT);
 
     // Set initial motor state to OFF
-    digitalWrite(in1, LOW);
-    digitalWrite(in2, LOW);
-    digitalWrite(in3, LOW);
-    digitalWrite(in4, LOW);
+    digitalWrite(r_front_motorB1, LOW);
+    digitalWrite(r_front_motorB2, LOW);
+    digitalWrite(l_front_motorA1, LOW);
+    digitalWrite(l_front_motorA2, LOW);
 
-    //Set the PWM Settings
-    ledcSetup(channel_0, freq, resolution);
-    ledcSetup(channel_1, freq, resolution);
+    // Set all pins to output
+    pinMode(r_back_motorB1, OUTPUT);
+    pinMode(r_back_motorB2, OUTPUT);
+    pinMode(l_back_motorA1, OUTPUT);
+    pinMode(l_back_motorA2, OUTPUT);
 
-    //Attach Pin to Channel
-    ledcAttachPin(SPEED_CONTROL_PIN_1, channel_0);
-    ledcAttachPin(SPEED_CONTROL_PIN_2, channel_1);
+    // Set initial motor state to OFF
+    digitalWrite(r_back_motorB1, LOW);
+    digitalWrite(r_back_motorB2, LOW);
+    digitalWrite(l_back_motorA1, LOW);
+    digitalWrite(l_back_motorA2, LOW);
 
-    // initialize default speed to SLOW
-    setCurrentSpeed(speedSettings::NORMAL);
-  }
-
-  // Turn the car left
-  void turnLeft()
-  {
-    Serial.println("car is turning left...");
-    setMotorSpeed();
-    digitalWrite(in1, LOW);
-    digitalWrite(in2, HIGH);
-    digitalWrite(in3, LOW);
-    digitalWrite(in4, LOW);
   }
 
   // Turn the car right
   void turnRight()
   {
     Serial.println("car is turning right...");
-    setMotorSpeed();
-    digitalWrite(in1, LOW);
-    digitalWrite(in2, LOW);
-    digitalWrite(in3, LOW);
-    digitalWrite(in4, HIGH);
+    //Front Motors
+    digitalWrite(r_front_motorB1, LOW);
+    digitalWrite(r_front_motorB2, HIGH);
+    digitalWrite(l_front_motorA1, LOW);
+    digitalWrite(l_front_motorA2, HIGH);
+    
+    //Back Motors
+    digitalWrite(r_back_motorB1, LOW);
+    digitalWrite(r_back_motorB2, HIGH);
+    digitalWrite(l_back_motorA1, LOW);
+    digitalWrite(l_back_motorA2, HIGH);
+  }
+
+  // Turn the car left
+  void turnLeft()
+  {
+    //Front Motors
+    Serial.println("car is turning left...");
+    digitalWrite(r_front_motorB1, HIGH);
+    digitalWrite(r_front_motorB2, LOW);
+    digitalWrite(l_front_motorA1, HIGH);
+    digitalWrite(l_front_motorA2, LOW);
+
+    //Back Motors
+    digitalWrite(r_back_motorB1, HIGH);
+    digitalWrite(r_back_motorB2, LOW);
+    digitalWrite(l_back_motorA1, HIGH);
+    digitalWrite(l_back_motorA2, LOW);
   }
 
   // Move the car forward
   void moveForward()
   {
+    //Front Motors
     Serial.println("car is moving forward...");
-    setMotorSpeed();
-    digitalWrite(in1, LOW);
-    digitalWrite(in2, HIGH);
-    digitalWrite(in3, LOW);
-    digitalWrite(in4, HIGH);
+    digitalWrite(r_front_motorB1, HIGH);
+    digitalWrite(r_front_motorB2, LOW);
+    digitalWrite(l_front_motorA1, LOW);
+    digitalWrite(l_front_motorA2, HIGH);
+
+    //Back Motors
+    digitalWrite(r_back_motorB1, HIGH);
+    digitalWrite(r_back_motorB2, LOW);
+    digitalWrite(l_back_motorA1, LOW);
+    digitalWrite(l_back_motorA2, HIGH);
   }
 
   // Move the car backward
   void moveBackward()
   {
-    setMotorSpeed();
+    //Front Motors
     Serial.println("car is moving backward...");
-    digitalWrite(in1, HIGH);
-    digitalWrite(in2, LOW);
-    digitalWrite(in3, HIGH);
-    digitalWrite(in4, LOW);
+    digitalWrite(r_front_motorB1, LOW);
+    digitalWrite(r_front_motorB2, HIGH);
+    digitalWrite(l_front_motorA1, HIGH);
+    digitalWrite(l_front_motorA2, LOW);
+
+    //Back Motors
+    digitalWrite(r_back_motorB1, LOW);
+    digitalWrite(r_back_motorB2, HIGH);
+    digitalWrite(l_back_motorA1, HIGH);
+    digitalWrite(l_back_motorA2, LOW);
   }
 
   // Stop the car
   void stop()
   {
     Serial.println("car is stopping...");
-    ledcWrite(channel_0, 0);
-    ledcWrite(channel_1, 0);
-
     // // Turn off motors
-    digitalWrite(in1, LOW);
-    digitalWrite(in2, LOW);
-    digitalWrite(in3, LOW);
-    digitalWrite(in4, LOW);
-  }
+    digitalWrite(r_front_motorB1, LOW);
+    digitalWrite(r_front_motorB2, LOW);
+    digitalWrite(l_front_motorA1, LOW);
+    digitalWrite(l_front_motorA2, LOW);
 
-  // Set the motor speed
-  void setMotorSpeed()
-  {
-    // change the duty cycle of the speed control pin connected to the motor
-    Serial.print("Speed Settings: ");
-    Serial.println(currentSpeedSettings);
-    ledcWrite(channel_0, currentSpeedSettings);
-    ledcWrite(channel_1, currentSpeedSettings);
-  }
-  // Set the current speed
-  void setCurrentSpeed(speedSettings newSpeedSettings)
-  {
-    Serial.println("car is changing speed...");
-    currentSpeedSettings = newSpeedSettings;
-  }
-  // Get the current speed
-  speedSettings getCurrentSpeed()
-  {
-    return currentSpeedSettings;
+    digitalWrite(r_back_motorB1, LOW);
+    digitalWrite(r_back_motorB2, LOW);
+    digitalWrite(l_back_motorA1, LOW);
+    digitalWrite(l_back_motorA2, LOW);
   }
 };
 
@@ -183,46 +169,6 @@ void sendCarCommand(const char *command)
   {
     car.stop();
   }
-  else if (strcmp(command, "slow-speed") == 0)
-  {
-    car.setCurrentSpeed(speedSettings::SLOW);
-  }
-  else if (strcmp(command, "normal-speed") == 0)
-  {
-    car.setCurrentSpeed(speedSettings::NORMAL);
-  }
-  else if (strcmp(command, "fast-speed") == 0)
-  {
-    car.setCurrentSpeed(speedSettings::FAST);
-  }
-}
-
-// Processor for index.html page template.  This sets the radio button to checked or unchecked
-String indexPageProcessor(const String &var)
-{
-  String status = "";
-  if (var == "SPEED_SLOW_STATUS")
-  {
-    if (car.getCurrentSpeed() == speedSettings::SLOW)
-    {
-      status = "checked";
-    }
-  }
-  else if (var == "SPEED_NORMAL_STATUS")
-  {
-    if (car.getCurrentSpeed() == speedSettings::NORMAL)
-    {
-      status = "checked";
-    }
-  }
-  else if (var == "SPEED_FAST_STATUS")
-  {
-    if (car.getCurrentSpeed() == speedSettings::FAST)
-    {
-      status = "checked";
-    }
-  }
-  return status;
 }
 
 // Callback function that receives messages from websocket client
@@ -311,7 +257,7 @@ void setup()
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
             {
               Serial.println("Requesting index page...");
-              request->send(SPIFFS, "/index.html", "text/html", false, indexPageProcessor);
+              request->send(SPIFFS, "/index.html", "text/html", false);
             });
 
   // Route to load entireframework.min.css file
@@ -325,6 +271,10 @@ void setup()
   // Route to load custom.js file
   server.on("/js/custom.js", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/js/custom.js", "text/javascript"); });
+            
+  // Route to load swarm_chan.jpg file
+  server.on("/swarm_chan.jpg", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(SPIFFS, "/swarm_chan.jpg", "image/jpg"); });
 
   // On Not Found
   server.onNotFound(notFound);
