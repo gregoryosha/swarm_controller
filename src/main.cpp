@@ -7,69 +7,113 @@
 class Car
 {
 private:
-  // Motor 1 connections
-  int motorA1 = 12;
-  int motorA2 = 13;
+  //Front Motor Driver Connections
+  int r_front_motorB1 = 2; //HIGH is forward 19 21
+  int r_front_motorB2 = 15; 
+  int l_front_motorA1 = 21;
+  int l_front_motorA2 = 19; //HIGH is forward
 
-  // Motor 2 connections
-  int motorB1 = 14;
-  int motorB2 = 27;
+  //Back Motor Driver Connections
+  int r_back_motorB1 = 18; //HIGH is forward
+  int r_back_motorB2 = 4;
+  int l_back_motorA1 = 23; 
+  int l_back_motorA2 = 22; //HIGH is forward
 
 public:
   Car()
   {
     // Set all pins to output
-    pinMode(motorA1, OUTPUT);
-    pinMode(motorA2, OUTPUT);
-    pinMode(motorB1, OUTPUT);
-    pinMode(motorB2, OUTPUT);
+    pinMode(r_front_motorB1, OUTPUT);
+    pinMode(r_front_motorB2, OUTPUT);
+    pinMode(l_front_motorA1, OUTPUT);
+    pinMode(l_front_motorA2, OUTPUT);
 
     // Set initial motor state to OFF
-    digitalWrite(motorA1, LOW);
-    digitalWrite(motorA2, LOW);
-    digitalWrite(motorB1, LOW);
-    digitalWrite(motorB2, LOW);
+    digitalWrite(r_front_motorB1, LOW);
+    digitalWrite(r_front_motorB2, LOW);
+    digitalWrite(l_front_motorA1, LOW);
+    digitalWrite(l_front_motorA2, LOW);
 
-  }
+    // Set all pins to output
+    pinMode(r_back_motorB1, OUTPUT);
+    pinMode(r_back_motorB2, OUTPUT);
+    pinMode(l_back_motorA1, OUTPUT);
+    pinMode(l_back_motorA2, OUTPUT);
 
-  // Turn the car left
-  void turnLeft()
-  {
-    Serial.println("car is turning left...");
-    digitalWrite(motorA1, LOW);
-    digitalWrite(motorA2, LOW);
-    digitalWrite(motorB1, LOW);
-    digitalWrite(motorB2, HIGH);
+    // Set initial motor state to OFF
+    digitalWrite(r_back_motorB1, LOW);
+    digitalWrite(r_back_motorB2, LOW);
+    digitalWrite(l_back_motorA1, LOW);
+    digitalWrite(l_back_motorA2, LOW);
+
   }
 
   // Turn the car right
   void turnRight()
   {
     Serial.println("car is turning right...");
-    digitalWrite(motorA1, LOW);
-    digitalWrite(motorA2, HIGH);
-    digitalWrite(motorB1, LOW);
-    digitalWrite(motorB2, LOW);
+    //Front Motors
+    digitalWrite(r_front_motorB1, LOW);
+    digitalWrite(r_front_motorB2, HIGH);
+    digitalWrite(l_front_motorA1, LOW);
+    digitalWrite(l_front_motorA2, HIGH);
+    
+    //Back Motors
+    digitalWrite(r_back_motorB1, LOW);
+    digitalWrite(r_back_motorB2, HIGH);
+    digitalWrite(l_back_motorA1, LOW);
+    digitalWrite(l_back_motorA2, HIGH);
+  }
+
+  // Turn the car left
+  void turnLeft()
+  {
+    //Front Motors
+    Serial.println("car is turning left...");
+    digitalWrite(r_front_motorB1, HIGH);
+    digitalWrite(r_front_motorB2, LOW);
+    digitalWrite(l_front_motorA1, HIGH);
+    digitalWrite(l_front_motorA2, LOW);
+
+    //Back Motors
+    digitalWrite(r_back_motorB1, HIGH);
+    digitalWrite(r_back_motorB2, LOW);
+    digitalWrite(l_back_motorA1, HIGH);
+    digitalWrite(l_back_motorA2, LOW);
   }
 
   // Move the car forward
   void moveForward()
   {
+    //Front Motors
     Serial.println("car is moving forward...");
-    digitalWrite(motorA1, LOW);
-    digitalWrite(motorA2, HIGH);
-    digitalWrite(motorB1, LOW);
-    digitalWrite(motorB2, HIGH);
+    digitalWrite(r_front_motorB1, HIGH);
+    digitalWrite(r_front_motorB2, LOW);
+    digitalWrite(l_front_motorA1, LOW);
+    digitalWrite(l_front_motorA2, HIGH);
+
+    //Back Motors
+    digitalWrite(r_back_motorB1, HIGH);
+    digitalWrite(r_back_motorB2, LOW);
+    digitalWrite(l_back_motorA1, LOW);
+    digitalWrite(l_back_motorA2, HIGH);
   }
 
   // Move the car backward
   void moveBackward()
   {
+    //Front Motors
     Serial.println("car is moving backward...");
-    digitalWrite(motorA1, HIGH);
-    digitalWrite(motorA2, LOW);
-    digitalWrite(motorB1, HIGH);
-    digitalWrite(motorB2, LOW);
+    digitalWrite(r_front_motorB1, LOW);
+    digitalWrite(r_front_motorB2, HIGH);
+    digitalWrite(l_front_motorA1, HIGH);
+    digitalWrite(l_front_motorA2, LOW);
+
+    //Back Motors
+    digitalWrite(r_back_motorB1, LOW);
+    digitalWrite(r_back_motorB2, HIGH);
+    digitalWrite(l_back_motorA1, HIGH);
+    digitalWrite(l_back_motorA2, LOW);
   }
 
   // Stop the car
@@ -77,10 +121,15 @@ public:
   {
     Serial.println("car is stopping...");
     // // Turn off motors
-    digitalWrite(motorA1, LOW);
-    digitalWrite(motorA2, LOW);
-    digitalWrite(motorB1, LOW);
-    digitalWrite(motorB2, LOW);
+    digitalWrite(r_front_motorB1, LOW);
+    digitalWrite(r_front_motorB2, LOW);
+    digitalWrite(l_front_motorA1, LOW);
+    digitalWrite(l_front_motorA2, LOW);
+
+    digitalWrite(r_back_motorB1, LOW);
+    digitalWrite(r_back_motorB2, LOW);
+    digitalWrite(l_back_motorA1, LOW);
+    digitalWrite(l_back_motorA2, LOW);
   }
 };
 
@@ -222,6 +271,10 @@ void setup()
   // Route to load custom.js file
   server.on("/js/custom.js", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/js/custom.js", "text/javascript"); });
+            
+  // Route to load swarm_chan.jpg file
+  server.on("/swarm_chan.jpg", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(SPIFFS, "/swarm_chan.jpg", "image/jpg"); });
 
   // On Not Found
   server.onNotFound(notFound);

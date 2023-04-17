@@ -28,35 +28,48 @@ function sendMessage(message) {
   websocket.send(message);
 }
 
+let pressed = {
+  w:false,
+  a:false,
+  s:false,
+  d:false
+}
+
 window.addEventListener('keydown', (press)=>{
-  if (press.key == 'w') {
+  if ((press.key == 'w' || press.key == 'ArrowUp') && !pressed.w) {
     sendMessage('up');
-    console.log(press)
+    pressed.w = true;
   }
-  else if (press.key == 'a') {
+  else if ((press.key == 'a' || press.key == 'ArrowLeft') && !pressed.a) {
     sendMessage('left');
+    pressed.a = true;
   }
-  else if (press.key == 'd') {
+  else if ((press.key == 'd' || press.key == 'ArrowRight') && !pressed.d) {
     sendMessage('right');
+    pressed.d = true;
   }
-  else if (press.key == 's') {
+  else if ((press.key == 's' || press.key == 'ArrowDown') && !pressed.s) {
     sendMessage('down');
+    pressed.s = true;
   }
 })
 
 window.addEventListener('keyup', (press)=>{
-  if (press.key == 'w') {
+  if (press.key == 'w' || press.key == 'ArrowUp') {
     sendMessage('stop');
-    console.log(press)
+    pressed.w = false;
   }
-  else if (press.key == 'a') {
+  else if (press.key == 'a' || press.key == 'ArrowLeft') {
     sendMessage('stop');
+    pressed.a = false;
   }
-  else if (press.key == 'd') {
+  else if (press.key == 'd' || press.key == 'ArrowRight') {
     sendMessage('stop');
+    pressed.d = false;
   }
-  else if (press.key == 's') {
+  else if (press.key == 's' || press.key == 'ArrowDown') {
     sendMessage('stop');
+    pressed.s = false;
   }
 })
 
