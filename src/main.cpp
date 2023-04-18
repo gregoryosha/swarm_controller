@@ -7,62 +7,45 @@
 class Car
 {
 private:
-  //Front Motor Driver Connections
-  int r_front_motorB1 = 2; //HIGH is forward 19 21
-  int r_front_motorB2 = 15; 
-  int l_front_motorA1 = 21;
-  int l_front_motorA2 = 19; //HIGH is forward
 
-  //Back Motor Driver Connections
-  int r_back_motorB1 = 18; //HIGH is forward
-  int r_back_motorB2 = 4;
-  int l_back_motorA1 = 23; 
-  int l_back_motorA2 = 22; //HIGH is forward
+  const int MOTOR_PINS[2][4] = {
+    {2, 15, 21, 19}, //front pins (right, left)
+    {18, 4, 23, 22}  //back pins (right, left)
+  };
 
 public:
   Car()
   {
-    // Set all pins to output
-    pinMode(r_front_motorB1, OUTPUT);
-    pinMode(r_front_motorB2, OUTPUT);
-    pinMode(l_front_motorA1, OUTPUT);
-    pinMode(l_front_motorA2, OUTPUT);
 
-    // Set initial motor state to OFF
-    digitalWrite(r_front_motorB1, LOW);
-    digitalWrite(r_front_motorB2, LOW);
-    digitalWrite(l_front_motorA1, LOW);
-    digitalWrite(l_front_motorA2, LOW);
+    for (int i=0; i<2; i++){
+      for (int j=0; j<4; j++) {
+        pinMode(MOTOR_PINS[i][j], OUTPUT); //Sets all motor to output
+        digitalWrite(MOTOR_PINS[i][j], LOW); //initially off
+      }
+    }
 
-    // Set all pins to output
-    pinMode(r_back_motorB1, OUTPUT);
-    pinMode(r_back_motorB2, OUTPUT);
-    pinMode(l_back_motorA1, OUTPUT);
-    pinMode(l_back_motorA2, OUTPUT);
+  }
 
-    // Set initial motor state to OFF
-    digitalWrite(r_back_motorB1, LOW);
-    digitalWrite(r_back_motorB2, LOW);
-    digitalWrite(l_back_motorA1, LOW);
-    digitalWrite(l_back_motorA2, LOW);
-
+  void writeMotors(bool motor_state[2][4]) 
+  {
+    for (int i=0; i<2; i++){
+      for (int j=0; j<4; j++) {
+        if (motor_state[i][j]){ //If the function reads a desired input, it will write that pin HIGH
+          digitalWrite(MOTOR_PINS[i][j], HIGH); 
+        }
+        else  {
+          digitalWrite(MOTOR_PINS[i][j], LOW);
+        }
+      }
+    }
   }
 
   // Turn the car right
   void turnRight()
   {
     Serial.println("car is turning right...");
-    //Front Motors
-    digitalWrite(r_front_motorB1, LOW);
-    digitalWrite(r_front_motorB2, HIGH);
-    digitalWrite(l_front_motorA1, LOW);
-    digitalWrite(l_front_motorA2, HIGH);
-    
-    //Back Motors
-    digitalWrite(r_back_motorB1, LOW);
-    digitalWrite(r_back_motorB2, HIGH);
-    digitalWrite(l_back_motorA1, LOW);
-    digitalWrite(l_back_motorA2, HIGH);
+    bool motor_right[2][4] = { {0, 1, 0, 1}, {0, 1, 0, 1} }; //Right motors are written HIGH
+    writeMotors(motor_right);
   }
 
   // Turn the car left
@@ -70,16 +53,8 @@ public:
   {
     //Front Motors
     Serial.println("car is turning left...");
-    digitalWrite(r_front_motorB1, HIGH);
-    digitalWrite(r_front_motorB2, LOW);
-    digitalWrite(l_front_motorA1, HIGH);
-    digitalWrite(l_front_motorA2, LOW);
-
-    //Back Motors
-    digitalWrite(r_back_motorB1, HIGH);
-    digitalWrite(r_back_motorB2, LOW);
-    digitalWrite(l_back_motorA1, HIGH);
-    digitalWrite(l_back_motorA2, LOW);
+    bool motor_left[2][4] = { {1, 0, 1, 0}, {1, 0, 1, 0} }; //Left motors are written HIGH
+    writeMotors(motor_left);
   }
 
   // Move the car forward
@@ -87,16 +62,8 @@ public:
   {
     //Front Motors
     Serial.println("car is moving forward...");
-    digitalWrite(r_front_motorB1, HIGH);
-    digitalWrite(r_front_motorB2, LOW);
-    digitalWrite(l_front_motorA1, LOW);
-    digitalWrite(l_front_motorA2, HIGH);
-
-    //Back Motors
-    digitalWrite(r_back_motorB1, HIGH);
-    digitalWrite(r_back_motorB2, LOW);
-    digitalWrite(l_back_motorA1, LOW);
-    digitalWrite(l_back_motorA2, HIGH);
+    bool motor_fwd[2][4] = { {1, 0, 0, 1}, {1, 0, 0, 1} }; //All motors driven forward
+    writeMotors(motor_fwd);
   }
 
   // Move the car backward
@@ -104,16 +71,8 @@ public:
   {
     //Front Motors
     Serial.println("car is moving backward...");
-    digitalWrite(r_front_motorB1, LOW);
-    digitalWrite(r_front_motorB2, HIGH);
-    digitalWrite(l_front_motorA1, HIGH);
-    digitalWrite(l_front_motorA2, LOW);
-
-    //Back Motors
-    digitalWrite(r_back_motorB1, LOW);
-    digitalWrite(r_back_motorB2, HIGH);
-    digitalWrite(l_back_motorA1, HIGH);
-    digitalWrite(l_back_motorA2, LOW);
+    bool motor_back[2][4] = { {0, 1, 1, 0}, {0, 1, 1, 0} }; //All motors driven backward
+    writeMotors(motor_back);
   }
 
   // Stop the car
@@ -121,28 +80,13 @@ public:
   {
     Serial.println("car is stopping...");
     // // Turn off motors
-    digitalWrite(r_front_motorB1, LOW);
-    digitalWrite(r_front_motorB2, LOW);
-    digitalWrite(l_front_motorA1, LOW);
-    digitalWrite(l_front_motorA2, LOW);
-
-    digitalWrite(r_back_motorB1, LOW);
-    digitalWrite(r_back_motorB2, LOW);
-    digitalWrite(l_back_motorA1, LOW);
-    digitalWrite(l_back_motorA2, LOW);
+    bool motor_back[2][4] = { {0, 0, 0, 0}, {0, 0, 0, 0} }; //All motors driven backward
+    writeMotors(motor_back);
   }
 };
 
-// Change this to your network SSID
-const char *ssid = "Tufts_Wireless";
-const char *password = "";
-
-// AsyncWebserver runs on port 80 and the asyncwebsocket is initialize at this point also
-AsyncWebServer server(80);
-AsyncWebSocket ws("/ws");
-
 // Our car object
-Car car;
+Car swarmbot;
 
 // Function to send commands to car
 void sendCarCommand(const char *command)
@@ -151,25 +95,33 @@ void sendCarCommand(const char *command)
   // or speed settingg "slow-speed", "normal-speed", or "fast-speed"
   if (strcmp(command, "left") == 0)
   {
-    car.turnLeft();
+    swarmbot.turnLeft();
   }
   else if (strcmp(command, "right") == 0)
   {
-    car.turnRight();
+    swarmbot.turnRight();
   }
   else if (strcmp(command, "up") == 0)
   {
-    car.moveForward();
+    swarmbot.moveForward();
   }
   else if (strcmp(command, "down") == 0)
   {
-    car.moveBackward();
+    swarmbot.moveBackward();
   }
   else if (strcmp(command, "stop") == 0)
   {
-    car.stop();
+    swarmbot.stop();
   }
 }
+
+// Server name 
+const char* ssid = "ESP32_Swarmbot";
+const char* password = "rlblab"; 
+
+// AsyncWebserver runs on port 80 and the asyncwebsocket is initialize at this point also
+AsyncWebServer server(80);
+AsyncWebSocket ws("/ws");
 
 // Callback function that receives messages from websocket client
 void onWsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type,
@@ -226,22 +178,14 @@ void notFound(AsyncWebServerRequest *request)
 // Setup function
 void setup()
 {
-  // Initialize the serial monitor baud rate
-  Serial.begin(115200);
-  Serial.println("Connecting to ");
-  Serial.println(ssid);
-
-  // Connect to your wifi
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
-  if (WiFi.waitForConnectResult() != WL_CONNECTED)
-  {
-    Serial.printf("WiFi Failed!\n");
-    return;
-  }
-
-  Serial.print("IP Address: ");
-  Serial.println(WiFi.localIP());
+  Serial.begin(115200); // basic setup for serta communication when ESp32 is connected to pc via USB
+  
+  // Setting up the ESP32 Hosted wifi (IE you connect to a network being produced by the ESP32) 
+  Serial.print("Setting AP (Access Point)…");
+  WiFi.softAP(ssid, password);
+  IPAddress IP = WiFi.softAPIP();
+  Serial.print("AP IP address: "); Serial.println(IP); // displays the IP address for the ESP32, by default it is 192.168.4.1
+  // you can confirm the IP by plugging in the ESP32, opening the serial monitor then resetting the ESP32, the above lines print the IP address
 
   // Initialize SPIFFS
   if (!SPIFFS.begin(true))
