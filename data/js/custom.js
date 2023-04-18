@@ -78,11 +78,9 @@ O-Pad/ D-Pad Controller and Javascript Code
 */
 // Prevent scrolling on every click!
 // super sweet vanilla JS delegated event handling!
-document.body.addEventListener("click", function (e) {
-  if (e.target && e.target.nodeName == "A") {
-    e.preventDefault();
-  }
-});
+window.addEventListener('touchstart', touchStartHandler);
+window.addEventListener('touchend', touchEndHandler);
+window.addEventListener('touchmove', touchMoveHandler);
 
 function touchStartHandler(event) {
   var direction = event.target.dataset.direction;
@@ -97,15 +95,37 @@ function touchEndHandler(event) {
   sendMessage(stop_command);
 }
 
+function touchMoveHandler(event) {
+  // Set call preventDefault()
+  event.preventDefault();
+}
 
-document.querySelectorAll('.control').forEach(item => {
-  item.addEventListener('touchstart', touchStartHandler);
+$(document).ready(function(){
+  window.disableSelection();
+});
+
+$.fn.extend({
+  disableSelection: function() {
+      this.each(function() {
+          this.onselectstart = function() {
+              return false;
+          };
+          this.unselectable = "on";
+          $(this).css('-moz-user-select', 'none');
+          $(this).css('-webkit-user-select', 'none');
+      });
+      return this;
+  }
+});
+
+// document.querySelectorAll('.control').forEach(item => {
+//   item.addEventListener('touchstart', touchStartHandler);
   
-})
+// })
 
-document.querySelectorAll('.control').forEach(item => {
-  item.addEventListener('touchend', touchEndHandler)
-})
+// document.querySelectorAll('.control').forEach(item => {
+//   item.addEventListener('touchend', touchEndHandler)
+// })
 
 
 

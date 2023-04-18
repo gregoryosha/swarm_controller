@@ -80,8 +80,8 @@ public:
   {
     Serial.println("car is stopping...");
     // // Turn off motors
-    bool motor_back[2][4] = { {0, 0, 0, 0}, {0, 0, 0, 0} }; //All motors driven backward
-    writeMotors(motor_back);
+    bool motor_stop[2][4] = { {0, 0, 0, 0}, {0, 0, 0, 0} }; //All motors driven backward
+    writeMotors(motor_stop);
   }
 };
 
@@ -210,7 +210,7 @@ void setup()
 
   // Route to load custom.css file
   server.on("/css/custom.css", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/css/custom.css", "text/css"); });
+            { request->send(SPIFFS, "/css/styles.css", "text/css"); });
 
   // Route to load custom.js file
   server.on("/js/custom.js", HTTP_GET, [](AsyncWebServerRequest *request)
