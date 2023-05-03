@@ -12,6 +12,9 @@ private:
     {2, 15, 21, 19}, //front pins (right, left)
     {18, 4, 23, 22}  //back pins (right, left)
   };
+  //Alvin pins = {4, 16, 2, 15}, {18, 19, 17, 5}
+  //Theodore pins = {4, 16, 2, 15}, {18, 19, 17, 5}
+  //Simmon pins = {2, 15, 21, 19}, {18, 4, 23, 22} 
 
 public:
   Car()
@@ -116,8 +119,8 @@ void sendCarCommand(const char *command)
 }
 
 // Server name 
-const char* ssid = "ESP32_Swarmbot";
-const char* password = "rlblab"; 
+const char* ssid = "Theodore_swarmbot";
+const char* password = "rlblabpassword"; 
 
 // AsyncWebserver runs on port 80 and the asyncwebsocket is initialize at this point also
 AsyncWebServer server(80);
@@ -204,12 +207,8 @@ void setup()
               request->send(SPIFFS, "/index.html", "text/html", false);
             });
 
-  // Route to load entireframework.min.css file
-  server.on("/css/entireframework.min.css", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/css/entireframework.min.css", "text/css"); });
-
   // Route to load custom.css file
-  server.on("/css/custom.css", HTTP_GET, [](AsyncWebServerRequest *request)
+  server.on("/css/styles.css", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(SPIFFS, "/css/styles.css", "text/css"); });
 
   // Route to load custom.js file
@@ -217,8 +216,8 @@ void setup()
             { request->send(SPIFFS, "/js/custom.js", "text/javascript"); });
             
   // Route to load swarm_chan.jpg file
-  server.on("/swarm_chan.jpg", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/swarm_chan.jpg", "image/jpg"); });
+  server.on("/profile.jpg", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(SPIFFS, "/profile.jpg", "image/jpg"); });
 
   // On Not Found
   server.onNotFound(notFound);
