@@ -11,7 +11,13 @@ After your computer is connected to the ESP32 by cable, there are two upload opt
 * Under 'General' `upload and monitor` will compile and upload the main C++ scripts to the ESP32 (Sometimes necessary to hold the boot button while this is happening)
 * Under 'Platform' `Upload Filesystem Image (esp32dev)` will compiles and upload the HTML, CSS, and javascript files that run the webpage
 
-## Main Code Breakdown
+## Main Code Breakdown and Driving the robots
 Within the main scripts, found in `src/main.cpp`, there are several important features to edit
 * The pins for each robot are listed at the top of the code and need to be correct for each robot
-* The server name and password should be unique for each robot
+* The server name and password are listed at the top and should be unique for each robot. These are the credentials used to connect your laptop
+
+Using a laptop is the most consistent way to drive the swarmbots:
+* Power on the swarmbot
+* Connect to the hosted network, usually in the format `'name'_swarmbot`
+* Enter `192.168.4.1` into any web browser 
+* Drive using the arrow keys or 'wasd'
