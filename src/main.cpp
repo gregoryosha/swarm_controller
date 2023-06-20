@@ -4,17 +4,31 @@
 #include <ESPAsyncWebServer.h>
 #include "SPIFFS.h"
 
+// Server name 
+const char* ssid = "Simon_swarmbot";
+const char* password = "rlblabpassword"; 
+
 class Car
 {
 private:
-
   const int MOTOR_PINS[2][4] = {
-    {2, 15, 21, 19}, //front pins (right, left)
-    {18, 4, 23, 22}  //back pins (right, left)
+    {4, 16, 15, 2}, 
+    {18, 19, 17, 5}
   };
-  //Alvin pins = {4, 16, 2, 15}, {18, 19, 17, 5}
-  //Theodore pins = {4, 16, 2, 15}, {18, 19, 17, 5}
-  //Simmon pins = {2, 15, 21, 19}, {18, 4, 23, 22} 
+  //{ right1, right2, left1, left2} front pins
+  //{ right1, right2, left1, left2} back pins
+/*
+Alvin pins = 
+  {4, 16, 2, 15}, 
+  {18, 19, 17, 5}
+Theodore pins *motors are low torque*
+  {2, 15, 19, 21}, 
+  {4, 18, 22, 23} 
+Simon pins *Legacy PCB used*
+  {4, 16, 15, 2}, 
+  {18, 19, 17, 5}
+*/
+  
 
 public:
   Car()
@@ -88,6 +102,8 @@ public:
   }
 };
 
+
+
 // Our car object
 Car swarmbot;
 
@@ -117,10 +133,6 @@ void sendCarCommand(const char *command)
     swarmbot.stop();
   }
 }
-
-// Server name 
-const char* ssid = "Theodore_swarmbot";
-const char* password = "rlblabpassword"; 
 
 // AsyncWebserver runs on port 80 and the asyncwebsocket is initialize at this point also
 AsyncWebServer server(80);
